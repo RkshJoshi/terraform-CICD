@@ -1,0 +1,54 @@
+name: 'Terraform'
+
+on:
+  push:
+    paths-ignore:
+    - '**.md'
+    - '**.json'
+    - '**.y*ml'
+  pull_request:
+    paths-ignore:
+    - '**.md'
+    - '**.json'
+    - '**.y*ml'
+
+jobs:
+  tflint:
+    name: 'TFLint'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: hashicorp/setup-terraform@v2
+    - uses: terraform-linters/setup-tflint@v3
+
+    - name: Terraform format and validate
+      run: |
+        terraform init -upgrade
+        terraform fmt -check -recursive
+        terraform validate -no-color        
+
+    - name: TFLint
+      run: |
+        tflint --init
+        tflint -f compact
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Render terraform docs and push changes back to PR
+      uses: terraform-docs/gh-actions@main
+      with:
+        working-dir: .
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
+        config-file: .terraform-docs.yml
+        git-commit-message: "docs(action): automated docs"

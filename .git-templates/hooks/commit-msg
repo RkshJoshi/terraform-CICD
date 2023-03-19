@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+# get the first line of the commit message
+INPUT_FILE=$1
+START_LINE=`head -n1 $INPUT_FILE`
+
+
+# types=("build","ci","docs","feat","fix","perf","refactor","style","test","chore")
+
+# types=("docs","feat","fix","chore")
+min_length=4
+max_length=50
+
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+ORANGE='\033[0;33m'
+WHITE='\033[0;37m'
+NC='\033[0m' # No Color
+
+# regexp2="^((${types[@]}): )(.{$min_length,$max_length}): (.+)$"
+regexp='$(doc|feat|fix|chore)(\(.+\))?: .{4,50}$'
+
+# build the regex pattern based on the config file
+function build_regex() {
+  regexp="^[.0-9]+$|"
+
+  for type in "${types[@]}"
+  do
+    regexp="${regexp}$type|"
+  done
+
+  regexp="${regexp%|})(\(.+\))?: "
+
+  regexp="${regexp}.{$min_length,$max_length}$"
+
+  echo $regexp
+}
+
+function print_error() {
+  echo -e "${RED}[Invalid Commit Message]"
+  echo -e "------------------------${NC}"
+  # echo -e "Valid types: ${CYAN}${types[@]}${NC}"
+  echo -e "Valid types: ${CYAN} docs, feat, fix, chore ${NC}"
+  echo -e "Max length (first line): ${RED}$max_length${NC}"
+  echo -e "Min length (first line): ${RED}$min_length${NC}\n"
+  echo -e "${WHITE}Regex: ${ORANGE}$regular_expression${NC}"
+  echo -e "${WHITE}Actual commit message: ${ORANGE}\"$START_LINE\"${NC}"
+  echo -e "${WHITE}Actual length: ${ORANGE}$(echo $START_LINE | wc -c)${NC}\n"
+}
+
+if [[ ! $START_LINE =~ [^$regexp] ]]; then
+  # commit message is invalid according to config - block commit
+  print_error
+  exit 1
+fi

@@ -1,0 +1,72 @@
+version: ">= 0.15.0"
+
+formatter: markdown
+
+header-from: main.tf
+footer-from: ""
+
+sections:
+  hide: []
+  show: []
+  
+
+  hide-all: false # deprecated in v0.13.0, removed in v0.15.0
+  show-all: true  # deprecated in v0.13.0, removed in v0.15.0
+
+content: |-
+
+  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+  
+  [![Terraform](https://github.com/crayon/terraform-aws-template/actions/workflows/ci.yml/badge.svg)](https://github.com/crayon/terraform-aws-template/actions/workflows/ci.yml)
+  
+  {{ .Header }}
+
+  {{ .Requirements }}
+
+  ## Example
+  ```hcl
+  {{ include "examples/basic/main.tf" }}
+  ```
+
+  {{ .Providers }}
+  
+  {{ .Modules }}
+
+  {{ .Inputs }}
+  
+  {{ .Outputs }}
+  
+  {{ .Resources }}
+  
+  ## Resources Graph
+  ![Resources Graph](./docs/graph.svg "Resources Graph")
+
+output:
+  file: "README.md"
+  mode: replace
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+
+output-values:
+  enabled: false
+  from: ""
+
+sort:
+  enabled: true
+  by: name
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: false
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  required: true
+  sensitive: true
+  type: true
