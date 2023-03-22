@@ -63,3 +63,14 @@ variable "cross_account_id"{
   description = "Cross account Id if resources needs to be deployed to other account"
   default = null
 }
+
+variable "buildspec" {
+  type = string
+  description = "buildspec definition path"
+}
+
+variable "deploy_codebuild"{
+  type = bool
+  default = false
+  description = "Create codebuild for Deploy stage"
+}
